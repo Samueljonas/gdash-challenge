@@ -22,7 +22,6 @@ O fluxo de dados segue o padrão *Producer-Consumer*:
 
 📂 Estrutura do Projeto
 
-Bash
 
 gdash-challenge/
 ├── gdash-api/         # Backend NestJS
@@ -32,7 +31,6 @@ gdash-challenge/
 ├── docker-compose.yml # Orquestração
 └── README.md
 
----
 
 🚀 Como Rodar (Quickstart)
 
@@ -70,12 +68,10 @@ Após os containers subirem (confira com docker compose ps), acesse:
 O sistema possui um "Seed" que cria um usuário administrador automaticamente.
 
 | Papel | Email | Senha |
-| --- | --- | --- |
 | Admin | admin@gdash.com | 123456 |
 
 > Você também pode criar novas contas clicando em "Cadastre-se" na tela de login.
 
----
 
 🛠️ Stack Tecnológica
 
@@ -95,10 +91,10 @@ O sistema possui um "Seed" que cria um usuário administrador automaticamente.
 - [x]  Pipeline de Dados Completo (Python -> Rabbit -> Go -> Nest -> Mongo)
 - [x]  Dashboard Interativo com Gráficos de Tendência
 - [x]  Cards de KPIs em tempo real
-- [x]  **IA Simbólica**: Geração automática de alertas e resumos
-- [x]  **Segurança Total**: Autenticação JWT, Hash de Senha (Bcrypt) e Guards
-- [x]  **Exportação**: Download de relatórios em CSV autenticado
-- [x]  **Docker**: Build multistage otimizado
+- [x]  IA Simbólica: Geração automática de alertas e resumos
+- [x]  Segurança Total: Autenticação JWT, Hash de Senha (Bcrypt) e Guards
+- [x]  Exportação: Download de relatórios em CSV autenticado
+- [x]  Docker: Build multistage otimizado
 
 📝 Licença
 
