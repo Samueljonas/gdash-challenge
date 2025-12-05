@@ -14,43 +14,43 @@ import {
 export default function Login() {
   const navigate = useNavigate();
 
-  // Estados para guardar o que o usuário digita
+  // States to store what the user types
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Não recarrega a página
+    e.preventDefault(); // Doesn't reload the page
     setLoading(true);
     setError("");
 
     try {
-      // 1. Bate na API de Login
+      // 1. Hits the Login API
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      // 2. Verifica se deu erro (401)
+      // 2. Checks for an error (401)
       if (!response.ok) {
-        throw new Error("Email ou senha incorretos!");
+        throw new Error("Incorrect email or password!");
       }
 
-      // 3. Pega o Token
+      // 3. Gets the Token
       const data = await response.json();
       const token = data.access_token;
 
-      // 4. Salva no bolso (LocalStorage)
-      // Isso persiste mesmo se fechar o navegador
+      // 4. Saves it in the pocket (LocalStorage)
+      // This persists even if the browser is closed
       localStorage.setItem("gdash_token", token);
       localStorage.setItem("gdash_user", JSON.stringify(data.user));
 
-      // 5. Vai para o Dashboard
+      // 5. Goes to the Dashboard
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Erro ao conectar com o servidor.");
+      setError(err.message || "Error connecting to the server.");
     } finally {
       setLoading(false);
     }
@@ -60,8 +60,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Card className="w-[350px] shadow-lg">
         <CardHeader>
-          <CardTitle>Acesso GDash</CardTitle>
-          <CardDescription>Entre com suas credenciais</CardDescription>
+          <CardTitle>GDash Access</CardTitle>
+          <CardDescription>Enter with your credentials</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
@@ -78,7 +78,7 @@ export default function Login() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -95,13 +95,13 @@ export default function Login() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
+              {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Não tem conta?{" "}
+            Don't have an account?{" "}
             <Link to="/register" className="text-blue-600 hover:underline">
-              Cadastre-se
+              Sign up
             </Link>
           </div>
         </CardContent>

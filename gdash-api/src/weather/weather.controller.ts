@@ -1,31 +1,31 @@
-import { Controller, Get, Post, Body, UseGuards, Res } from '@nestjs/common'; // <--- Adicione UseGuards
+import { Controller, Get, Post, Body, UseGuards, Res } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import type { Response } from 'express';
 import { CreateWeatherDto } from './dto/create-weather.dto';
-import { AuthGuard } from 'src/auth/auth.guard'; // <--- Importe o Guardião
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('api/weather')
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
-  // --- ROTA PÚBLICA (O Worker em Go precisa postar sem login) ---
-  // OBS: Em um sistema real, o Go teria uma API Key, mas para simplificar,
-  // vamos deixar o POST público ou proteger com uma chave simples depois.
-  // Por enquanto, deixamos SEM o Guard aqui para o Go não quebrar.
+  // --- PUBLIC ROUTE (The Go Worker needs to post without login) ---
+  // NOTE: In a real system, the Go worker would have an API Key, but to simplify,
+  // we'll leave the POST public or protect it with a simple key later.
+  // For now, we're leaving it WITHOUT the Guard so the Go worker doesn't break.
   @Post('logs')
   create(@Body() createWeatherDto: CreateWeatherDto) {
     return this.weatherService.create(createWeatherDto);
   }
 
-  // --- ROTAS PROTEGIDAS (Apenas Frontend Logado acessa) ---
+  // --- PROTECTED ROUTES (Only Logged-in Frontend can access) ---
 
-  @UseGuards(AuthGuard) // <--- CADEADO NESTA ROTA
+  @UseGuards(AuthGuard)
   @Get('logs')
   findAll() {
     return this.weatherService.findAll();
   }
 
-  @UseGuards(AuthGuard) // <--- CADEADO NESTA ROTA TAMBÉM
+  @UseGuards(AuthGuard)
   @Get('insights')
   getInsights() {
     return this.weatherService.generateInsights();

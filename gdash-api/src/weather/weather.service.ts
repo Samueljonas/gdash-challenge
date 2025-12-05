@@ -6,27 +6,27 @@ import { WeatherLog } from './schemas/weather-log.schema';
 
 @Injectable()
 export class WeatherService {
-  // Injeção de Dependência: O NestJS nos entrega o modelo do Mongo pronto para usar
+  // Dependency Injection: NestJS provides us with the ready-to-use Mongo model
   constructor(
     @InjectModel(WeatherLog.name) private weatherModel: Model<WeatherLog>,
   ) {}
 
-  // --- MÉTODOS EXISTENTES ---
+  // --- EXISTING METHODS ---
   async getCsvData(): Promise<string> {
-    const logs = await this.findAll(); // Busca todos os dados
+    const logs = await this.findAll(); // Fetches all data
 
-    // 1. O Cabeçalho do CSV
+    // 1. The CSV Header
     const header =
-      'Data/Hora,Temperatura(C),Umidade(%),Precipitacao(mm),Latitude,Longitude';
+      'DateTime,Temperature(C),Humidity(%),Precipitation(mm),Latitude,Longitude';
 
-    // 2. As Linhas de Dados
+    // 2. The Data Rows
     const rows = logs.map((log) => {
-      // Formata a data para ISO ou Local, evite vírgulas dentro do campo data!
+      // Format the date to ISO or Local, avoid commas within the date field!
       const date = new Date(log.timestamp).toISOString();
       return `${date},${log.temperature},${log.humidity},${log.precipitation},${log.latitude},${log.longitude}`;
     });
 
-    // 3. Junta tudo com quebra de linha (\n)
+    // 3. Join everything with a newline character (\n)
     return [header, ...rows].join('\n');
   }
 
@@ -36,69 +36,70 @@ export class WeatherService {
   }
 
   async findAll(): Promise<WeatherLog[]> {
-    // Busca tudo, ordena pelo mais novo (-1 no createdAt)
+    // Fetches everything, sorts by the newest (-1 on createdAt)
     return this.weatherModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  // --- NOVO MÉTODO: A "IA" DE REGRAS ---
+  // --- NEW METHOD: THE "AI" RULES ENGINE ---
 
   async generateInsights() {
-    // 1. Buscamos os últimos 20 registros para ter base de análise
+    // 1. We fetch the last 20 records to have a basis for analysis
     const logs = await this.weatherModel
       .find()
       .sort({ createdAt: -1 })
       .limit(20)
       .exec();
 
-    // Se não tiver dados suficientes, retornamos um insight padrão
+    // If there isn't enough data, we return a default insight
     if (logs.length === 0) {
       return {
-        summary: 'Aguardando dados para análise...',
+        summary: 'Waiting for data for analysis...',
         alerts: [],
       };
     }
 
-    const current = logs[0]; // O dado mais recente
-    const alerts: string[] = []; // Lista de alertas que vamos preencher
+    const current = logs[0]; // The most recent data
+    const alerts: string[] = []; // List of alerts that we will populate
 
-    // --- ANÁLISE 1: Média de Temperatura ---
-    // reduce: Percorre o array somando as temperaturas
+    // --- ANALYSIS 1: Average Temperature ---
+    // reduce: Iterates through the array summing the temperatures
     const totalTemp = logs.reduce((acc, log) => acc + log.temperature, 0);
-    const avgTemp = (totalTemp / logs.length).toFixed(1); // Arredonda para 1 casa decimal
+    const avgTemp = (totalTemp / logs.length).toFixed(1); // Rounds to 1 decimal place
 
-    // --- ANÁLISE 2: Detecção de Anomalias (Regras de Negócio) ---
+    // --- ANALYSIS 2: Anomaly Detection (Business Rules) ---
 
-    // Regra: Calor
+    // Rule: Heat
     if (current.temperature > 30) {
       alerts.push(
-        '🔥 Alerta de Calor: Temperatura acima de 30°C. Eficiência dos painéis pode cair.',
+        '🔥 Heat Alert: Temperature above 30°C. Panel efficiency may decrease.',
       );
     } else if (current.temperature < 15) {
-      alerts.push('❄️ Alerta de Frio: Temperatura baixa detectada.');
+      alerts.push('❄️ Cold Alert: Low temperature detected.');
     }
 
-    // Regra: Umidade e Chuva
+    // Rule: Humidity and Rain
     if (current.humidity > 80 || current.precipitation > 0) {
       alerts.push(
-        '💧 Risco de Chuva/Umidade: Verifique isolamento elétrico externo.',
+        '💧 Rain/Humidity Risk: Check external electrical insulation.',
       );
     }
 
-    // Regra: Estabilidade (Comparando o atual com a média)
+    // Rule: Stability (Comparing the current with the average)
     let stabilityCheck = '';
     if (Math.abs(current.temperature - Number(avgTemp)) > 5) {
-      stabilityCheck = 'O clima está instável, com variações bruscas.';
+      stabilityCheck = 'The weather is unstable, with abrupt variations.';
     } else {
-      stabilityCheck = 'O clima segue estável em relação à média recente.';
+      stabilityCheck =
+        'The weather remains stable relative to the recent average.';
     }
 
-    // 3. Montamos a resposta final
+    // 3. We assemble the final response
     return {
-      summary: `Nas últimas horas, a temperatura média foi de ${avgTemp}°C. ${stabilityCheck}`,
+      summary: `In the last few hours, the average temperature was ${avgTemp}°C. ${stabilityCheck}`,
       alerts:
         alerts.length > 0
           ? alerts
-          : ['✅ Tudo operando dentro da normalidade.'],
+          : ['✅ Everything operating within normality.'],
     };
   }
 }

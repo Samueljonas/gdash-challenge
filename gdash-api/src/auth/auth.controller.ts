@@ -7,8 +7,8 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK) // Retorna 200 OK em vez de 201 Created
-  @Post('login') // URL Final: POST /auth/login
+  @HttpCode(HttpStatus.OK) // Returns 200 OK instead of 201 Created
+  @Post('login') // Final URL: POST /auth/login
   signIn(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

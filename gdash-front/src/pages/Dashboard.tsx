@@ -29,7 +29,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// --- INTERFACES (Contratos de Dados) ---
+// --- INTERFACES (Data Contracts) ---
 
 interface WeatherLog {
   _id: string;
@@ -47,23 +47,23 @@ interface InsightsData {
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  // --- ESTADOS ---
+  // --- STATES ---
   const [logs, setLogs] = useState<WeatherLog[]>([]);
   const [insights, setInsights] = useState<InsightsData>({
-    summary: "Carregando análise inteligente...",
+    summary: "Loading smart analysis...",
     alerts: [],
   });
 
-  // --- FUNÇÕES DE SEGURANÇA E AUXILIARES ---
+  // --- SECURITY AND HELPER FUNCTIONS ---
 
-  // 1. Função de Logout
+  // 1. Logout Function
   const handleLogout = () => {
     localStorage.removeItem("gdash_token");
     localStorage.removeItem("gdash_user");
     navigate("/");
   };
 
-  // 2. Fetch Seguro (Busca dados JSON com Token)
+  // 2. Secure Fetch (Fetches JSON data with Token)
   const fetchProtectedData = async (url: string) => {
     const token = localStorage.getItem("gdash_token");
 
@@ -86,23 +86,23 @@ export default function Dashboard() {
 
       return await response.json();
     } catch (error) {
-      console.error("Erro na requisição:", error);
+      console.error("Request error:", error);
       return null;
     }
   };
 
-  // 3. Exportação de CSV (Lógica Nova)
+  // 3. CSV Export (New Logic)
   const handleExportCsv = async () => {
     const token = localStorage.getItem("gdash_token");
     if (!token) return;
 
     try {
-      // Fazemos o fetch para a rota de download
+      // We fetch the download route
       const response = await fetch(
         "http://localhost:3000/api/weather/export/csv",
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Precisa do token para baixar!
+            Authorization: `Bearer ${token}`, // Needs the token to download!
           },
         }
       );
@@ -112,40 +112,40 @@ export default function Dashboard() {
         return;
       }
 
-      // Converte a resposta em um arquivo (Blob)
+      // Converts the response into a file (Blob)
       const blob = await response.blob();
 
-      // Cria um link temporário no navegador para iniciar o download
+      // Creates a temporary link in the browser to start the download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      // Define o nome do arquivo com a data de hoje
-      a.download = `gdash_relatorio_${
+      // Defines the file name with today's date
+      a.download = `gdash_report_${
         new Date().toISOString().split("T")[0]
       }.csv`;
       document.body.appendChild(a);
 
-      // Clica no link e limpa a sujeira
+      // Clicks the link and cleans up the mess
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Erro ao baixar CSV:", error);
-      alert("Erro ao exportar arquivo.");
+      console.error("Error downloading CSV:", error);
+      alert("Error exporting file.");
     }
   };
 
-  // --- CICLO DE VIDA ---
+  // --- LIFECYCLE ---
 
   useEffect(() => {
-    // Busca Logs
+    // Fetch Logs
     fetchProtectedData("http://localhost:3000/api/weather/logs").then(
       (data) => {
         if (data) setLogs(data);
       }
     );
 
-    // Busca Insights
+    // Fetch Insights
     fetchProtectedData("http://localhost:3000/api/weather/insights").then(
       (data) => {
         if (data) setInsights(data);
@@ -153,7 +153,7 @@ export default function Dashboard() {
     );
   }, []);
 
-  // --- DADOS VISUAIS ---
+  // --- VISUAL DATA ---
 
   const current = logs[0] || { temperature: 0, humidity: 0, precipitation: 0 };
 
@@ -161,7 +161,7 @@ export default function Dashboard() {
     .slice(0, 20)
     .reverse()
     .map((log) => ({
-      time: new Date(log.timestamp).toLocaleTimeString("pt-BR", {
+      time: new Date(log.timestamp).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       }),
@@ -169,7 +169,7 @@ export default function Dashboard() {
       humidity: log.humidity,
     }));
 
-  // --- RENDERIZAÇÃO ---
+  // --- RENDER ---
   return (
     <div className="min-h-screen bg-slate-50/50 p-8">
       {/* HEADER */}
@@ -178,52 +178,52 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             GDash Weather
           </h1>
-          <p className="text-slate-500">Monitoramento seguro em tempo real.</p>
+          <p className="text-slate-500">Secure real-time monitoring.</p>
         </div>
         <div className="flex gap-2">
-          {/* Botão de CSV conectado à função handleExportCsv */}
+          {/* CSV Button connected to the handleExportCsv function */}
           <Button variant="outline" size="sm" onClick={handleExportCsv}>
-            <Download className="mr-2 h-4 w-4" /> Exportar CSV
+            <Download className="mr-2 h-4 w-4" /> Export CSV
           </Button>
           <Button variant="destructive" size="sm" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" /> Sair
+            <LogOut className="mr-2 h-4 w-4" /> Logout
           </Button>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* BLOCO 1: KPIs */}
+        {/* BLOCK 1: KPIs */}
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Temperatura Atual
+                Current Temperature
               </CardTitle>
               <Thermometer className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{current.temperature}°C</div>
-              <p className="text-xs text-muted-foreground">Tempo Real</p>
+              <p className="text-xs text-muted-foreground">Real-Time</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Umidade Relativa
+                Relative Humidity
               </CardTitle>
               <Droplets className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{current.humidity}%</div>
-              <p className="text-xs text-muted-foreground">Ambiente</p>
+              <p className="text-xs text-muted-foreground">Environment</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Precipitação
+                Precipitation
               </CardTitle>
               <CloudRain className="h-4 w-4 text-slate-500" />
             </CardHeader>
@@ -231,16 +231,16 @@ export default function Dashboard() {
               <div className="text-2xl font-bold">
                 {current.precipitation} mm
               </div>
-              <p className="text-xs text-muted-foreground">Acumulado</p>
+              <p className="text-xs text-muted-foreground">Accumulated</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* BLOCO 2: Gráfico e IA */}
+        {/* BLOCK 2: Chart and AI */}
         <div className="grid gap-4 md:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>Tendência (Últimas Leituras)</CardTitle>
+              <CardTitle>Trend (Last Readings)</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
               <div className="h-[300px]">
@@ -279,14 +279,14 @@ export default function Dashboard() {
           <Card className="col-span-3 bg-indigo-50 border-indigo-100">
             <CardHeader className="flex flex-row items-center gap-2">
               <Bot className="h-5 w-5 text-indigo-600" />
-              <CardTitle className="text-indigo-900">IA Insights</CardTitle>
+              <CardTitle className="text-indigo-900">AI Insights</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="p-4 bg-white rounded-lg shadow-sm border border-indigo-100">
                   <p className="text-sm text-slate-600">
                     <span className="font-semibold text-indigo-600">
-                      Resumo:
+                      Summary:
                     </span>{" "}
                     {insights.summary}
                   </p>
@@ -299,7 +299,7 @@ export default function Dashboard() {
                     >
                       <p className="text-sm text-slate-600">
                         <span className="font-semibold text-amber-600">
-                          Alerta:
+                          Alert:
                         </span>{" "}
                         {alert}
                       </p>
@@ -307,7 +307,7 @@ export default function Dashboard() {
                   ))
                 ) : (
                   <div className="p-4 text-center text-sm text-indigo-400 border border-dashed border-indigo-200 rounded-lg">
-                    Nenhum alerta crítico.
+                    No critical alerts.
                   </div>
                 )}
               </div>
@@ -315,26 +315,26 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* BLOCO 3: Histórico Tabela */}
+        {/* BLOCK 3: History Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Auditoria de Dados</CardTitle>
+            <CardTitle>Data Audit</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Data/Hora</TableHead>
-                  <TableHead>Temperatura</TableHead>
-                  <TableHead>Umidade</TableHead>
-                  <TableHead className="text-right">Chuva</TableHead>
+                  <TableHead>Date/Time</TableHead>
+                  <TableHead>Temperature</TableHead>
+                  <TableHead>Humidity</TableHead>
+                  <TableHead className="text-right">Rain</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {logs.slice(0, 5).map((log) => (
                   <TableRow key={log._id}>
                     <TableCell className="font-medium">
-                      {new Date(log.timestamp).toLocaleString("pt-BR")}
+                      {new Date(log.timestamp).toLocaleString("en-US")}
                     </TableCell>
                     <TableCell>{log.temperature}°C</TableCell>
                     <TableCell>{log.humidity}%</TableCell>

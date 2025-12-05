@@ -2,22 +2,22 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { UsersModule } from 'src/users/users.module'; // Importante!
+import { UsersModule } from 'src/users/users.module';
 import { AuthGuard } from './auth.guard';
 
 @Module({
   imports: [
-    UsersModule, // Importamos para poder usar o UsersService
+    UsersModule, // We import this to be able to use UsersService
 
-    // Configuração do JWT
+    // JWT Configuration
     JwtModule.register({
-      global: true, // Disponível no app todo
-      secret: 'SEGREDO_SUPER_SECRETO_DO_GDASH', // Em produção, isso iria no .env!
-      signOptions: { expiresIn: '1h' }, // O token expira em 1 hora (segurança)
+      global: true, // Available throughout the app
+      secret: 'SEGREDO_SUPER_SECRETO_DO_GDASH', // In production, this would go in the .env!
+      signOptions: { expiresIn: '1h' }, // The token expires in 1 hour (security)
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard],
-  exports: [AuthGuard, AuthService], // Exporta o AuthGuard e AuthService para outros módulos
+  exports: [AuthGuard, AuthService], // Exports AuthGuard and AuthService for other modules
 })
 export class AuthModule {}

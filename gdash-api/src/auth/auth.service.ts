@@ -1,36 +1,36 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UsersService } from 'src/users/users.service'; // Importando o módulo vizinho
+import { UsersService } from 'src/users/users.service'; // Importing the neighboring module
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService, // Injetamos o serviço de usuários
-    private jwtService: JwtService, // Injetamos o gerador de tokens
+    private usersService: UsersService, // We inject the users service
+    private jwtService: JwtService, // We inject the token generator
   ) {}
-  // --- FUNÇÃO DE REGISTRO ---
+  // --- REGISTRATION FUNCTION ---
   async register(createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
-  // --- FUNÇÃO DE LOGIN ---
+  // --- LOGIN FUNCTION ---
   async login(loginDto: LoginDto) {
-    // 1. Busca o usuário pelo email
+    // 1. Find the user by email
     const user = await this.usersService.findOneByEmail(loginDto.email);
 
-    // 2. Se usuário não existe, rejeita imediatamente
+    // 2. If the user doesn't exist, reject immediately
     if (!user) {
       throw new UnauthorizedException(
-        'Credenciais inválidas (Email não encontrado)',
+        'Invalid credentials (Email not found)',
       );
     }
 
-    // 3. Comparação de Senhas (A Hora da Verdade)
-    // bcrypt.compare(senha_digitada, hash_do_banco)
-    // Ele pega a senha digitada, aplica o mesmo algoritmo e vê se o resultado bate com o hash.
+    // 3. Password Comparison (The Moment of Truth)
+    // bcrypt.compare(typed_password, hash_from_database)
+    // It takes the typed password, applies the same algorithm, and checks if the result matches the hash.
     const isPasswordValid = await bcrypt.compare(
       loginDto.password,
       user.password,
@@ -38,18 +38,18 @@ export class AuthService {
 
     if (!isPasswordValid) {
       throw new UnauthorizedException(
-        'Credenciais inválidas (Senha incorreta)',
+        'Invalid credentials (Incorrect password)',
       );
     }
 
-    // 4. Se passou, vamos gerar a "Pulseira" (Token)
-    // O 'payload' é o conteúdo que vai ficar escrito dentro do token criptografado.
+    // 4. If it passed, let's generate the "Wristband" (Token)
+    // The 'payload' is the content that will be written inside the encrypted token.
     const payload = { sub: user._id, email: user.email, name: user.name };
 
     return {
-      access_token: await this.jwtService.signAsync(payload), // Assina o token digitalmente
+      access_token: await this.jwtService.signAsync(payload), // Digitally signs the token
       user: {
-        // Retornamos dados básicos para o frontend saber quem logou
+        // We return basic data for the frontend to know who logged in
         name: user.name,
         email: user.email,
       },

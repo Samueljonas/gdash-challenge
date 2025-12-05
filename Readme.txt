@@ -1,10 +1,14 @@
-# 🌤️ GDash Weather Monitor
+`# 🌤️ GDash Weather Monitor
 
 > Uma solução Full-Stack distribuída para monitoramento climático em tempo real, utilizando arquitetura de microsserviços, dockerização completa e análise de dados inteligente.
 
 ![Project Status](https://img.shields.io/badge/status-complete-green)
 ![Docker](https://img.shields.io/badge/docker-compose-blue)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
+[![Assista ao Vídeo](https://img.shields.io/badge/▶-Ver_Demo_no_YouTube-red?style=for-the-badge)]
+
+![Dashboard Preview](./.github/assets/print_homepage.png)
 
 ## 📖 Sobre o Projeto
 
@@ -14,73 +18,109 @@ O diferencial deste projeto é a **arquitetura desacoplada**: a coleta de dados 
 
 ### 🏗️ Arquitetura da Solução
 
-O sistema é composto por 5 serviços containerizados que rodam em orquestra:
+O fluxo de dados segue o padrão *Producer-Consumer*:
 
-1.  **Collector (Python 3.10):**
-    * Agente responsável por consumir a API Open-Meteo periodicamente.
-    * Normaliza os dados brutos e os publica na fila do RabbitMQ.
-2.  **Queue (RabbitMQ):**
-    * Message Broker que garante a persistência e entrega assíncrona dos dados.
-3.  **Worker (Go 1.22):**
-    * Consumidor de alta performance.
-    * Lê a fila, valida a integridade dos dados (Structs) e envia para a API via HTTP.
-4.  **API Backend (NestJS + MongoDB):**
-    * Gerencia autenticação (JWT) e autorização (Guards).
-    * Persiste logs históricos no MongoDB.
-    * Gera **Insights de IA Simbólica** (regras de negócio para alertas de calor/frio/chuva).
-    * Gera relatórios CSV para download seguro.
-5.  **Frontend (React + Vite + Tailwind):**
-    * Dashboard executivo com gráficos de tendência em tempo real (Recharts).
-    * Sistema de Login e Registro completo com proteção de rotas.
-    * Design moderno utilizando componentes shadcn/ui.
+```mermaid
+graph LR
+    A[Python Collector] -->|JSON| B(RabbitMQ Queue)
+    B -->|Consome| C[Go Worker]
+    C -->|POST HTTP| D[NestJS API]
+    D <-->|Leitura/Escrita| E[(MongoDB)]
+    F[React Frontend] <-->|Rest API + JWT| D
+    D -.->|Insights IA| F`
+
+1. **Collector (Python 3.10):** Agente que consome a API Open-Meteo e publica na fila.
+2. **Queue (RabbitMQ):** Buffer que garante a persistência dos dados.
+3. **Worker (Go 1.22):** Consumidor de alta performance que valida e envia dados para a API.
+4. **API (NestJS):** Gerencia Auth, persistência e gera Insights Simbólicos.
+5. **Frontend (React):** Dashboard executivo com gráficos em tempo real.
+
+---
+
+## 📂 Estrutura do Projeto
+
+Bash
+
+`gdash-challenge/
+├── gdash-api/         # Backend NestJS
+├── gdash-front/       # Frontend React + Vite
+├── weather-collector/ # Script Python
+├── weather-worker/    # Worker Golang
+├── docker-compose.yml # Orquestração
+└── README.md`
 
 ---
 
 ## 🚀 Como Rodar (Quickstart)
 
-A aplicação é totalmente "Dockerizada". Você não precisa instalar Node, Python ou Go na sua máquina. Apenas o **Docker**.
+A aplicação é totalmente "Dockerizada".
 
 ### 1. Clone o repositório
-```bash
-git clone [https://github.com/SEU-USUARIO/gdash-challenge.git](https://github.com/SEU-USUARIO/gdash-challenge.git)
-cd gdash-challenge
-2. Suba o ambienteExecute o comando abaixo na raiz do projeto para construir as imagens e iniciar os containers:Bash# Se você tiver Docker Compose V2 (Mais recente)
+
+Bash
+
+`git clone https://github.com/SEU-USUARIO/gdash-challenge.git
+cd gdash-challenge`
+
+### 2. Suba o ambiente
+
+Execute o comando abaixo na raiz do projeto:
+
+Bash
+
+`# Docker Compose V2 (Mais recente)
 docker compose up --build -d
 
-# OU (Se usar versão Legada/Antiga)
-DOCKER_BUILDKIT=0 docker-compose up --build -d
+# OU (Versão Legada)
+DOCKER_BUILDKIT=0 docker-compose up --build -d`
 
-3. Acesse a AplicaçãoApós os containers subirem (verifique com docker compose ps), acesse:
-Frontend (Dashboard): http://localhost:5173API 
-(JSON): http://localhost:3000/api/weather/logs
-RabbitMQ Management: http://localhost:15672 (Login: guest / guest)
+### 3. Acesse a Aplicação
 
-🔐 Credenciais e AcessoO sistema possui um "Seed" que cria um usuário administrador automaticamente na primeira execução.
+Após os containers subirem (confira com `docker compose ps`), acesse:
 
-Login Admin: admin@gdash.com
-Senha: 123456
+- **Frontend:** [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
+- **API Docs:** [http://localhost:3000/api/weather/logs](https://www.google.com/search?q=http://localhost:3000/api/weather/logs)
+- **RabbitMQ:** [http://localhost:15672](https://www.google.com/search?q=http://localhost:15672) (User: `guest` / Pass: `guest`)
 
-Você também pode criar novas contas clicando em "Cadastre-se" na tela de login.
+---
 
-🛠️ Stack Tecnológica
-Serviço             Tecnologia                      Responsabilidade 
-Coleta      Python, Requests, Schedule          Ingestão de dados externos
-Broker              RabbitMQ                      Buffer e desacoplamento
-Worker          Go (Golang), AMQP               Processamento de alto throughput    
-API        NestJS, Mongoose, JWT, Bcrypt        Regra de negócio e Segurança
-Banco               MongoDB                        Armazenamento NoSQL
-Front        React, Tailwind v3, shadcn/ui      Visualização e Interação
-Infra              Docker, Nginx                 Orquestração e Proxy Reverso
+## 🔐 Credenciais e Acesso
 
+O sistema possui um "Seed" que cria um usuário administrador automaticamente.
 
-✅ Funcionalidades Entregues
+| **Papel** | **Email** | **Senha** |
+| --- | --- | --- |
+| **Admin** | `admin@gdash.com` | `123456` |
 
-[x] Pipeline de Dados Completo (Python -> Rabbit -> Go -> Nest -> Mongo)
-[x] Dashboard Interativo com Gráficos de Tendência
-[x] Cards de KPIs em tempo real (Temperatura, Umidade, Chuva)
-[x] IA Simbólica: Geração automática de alertas e resumos no backend
-[x] Segurança Total: Autenticação JWT, Hash de Senha (Bcrypt) e Guards nas rotas
-[x] Exportação de Dados: Download de relatórios em CSV autenticado
-[x] Docker: Build multistage otimizado e orquestração via Compose
+> Você também pode criar novas contas clicando em "Cadastre-se" na tela de login.
+> 
 
-📝 LicençaEste projeto foi desenvolvido como parte de um desafio técnico.
+---
+
+## 🛠️ Stack Tecnológica
+
+| **Serviço** | **Tecnologia** | **Responsabilidade** |
+| --- | --- | --- |
+| **Coleta** | Python, Requests, Schedule | Ingestão de dados externos |
+| **Broker** | RabbitMQ | Buffer e desacoplamento |
+| **Worker** | Go (Golang), AMQP | Processamento de alto throughput |
+| **API** | NestJS, Mongoose, JWT | Regra de negócio e Segurança |
+| **Banco** | MongoDB | Armazenamento NoSQL |
+| **Front** | React, Tailwind v3, shadcn/ui | Visualização e Interação |
+| **Infra** | Docker, Nginx | Orquestração |
+
+---
+
+## ✅ Funcionalidades
+
+- [x]  Pipeline de Dados Completo (Python -> Rabbit -> Go -> Nest -> Mongo)
+- [x]  Dashboard Interativo com Gráficos de Tendência
+- [x]  Cards de KPIs em tempo real
+- [x]  **IA Simbólica**: Geração automática de alertas e resumos
+- [x]  **Segurança Total**: Autenticação JWT, Hash de Senha (Bcrypt) e Guards
+- [x]  **Exportação**: Download de relatórios em CSV autenticado
+- [x]  **Docker**: Build multistage otimizado
+
+## 📝 Licença
+
+Este projeto foi desenvolvido como parte de um desafio técnico.

@@ -9,33 +9,33 @@ import { User } from './schemas/user.schema';
 export class UsersService implements OnModuleInit {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  // --- SEED: CRIAR USUÁRIO PADRÃO AO INICIAR ---
+  // --- SEED: CREATE DEFAULT USER ON STARTUP ---
   async onModuleInit() {
     const adminEmail = 'admin@gdash.com';
     const exists = await this.userModel.findOne({ email: adminEmail });
 
     if (!exists) {
-      console.log('⚡ Criando usuário ADMIN padrão...');
-      // Senha padrão: "123456"
-      // O "10" é o custo do processamento (Salt rounds)
+      console.log('⚡ Creating default ADMIN user...');
+      // Default password: "123456"
+      // The "10" is the processing cost (Salt rounds)
       const passwordHash = await bcrypt.hash('123456', 10);
 
       await this.userModel.create({
         email: adminEmail,
         password: passwordHash,
-        name: 'Administrador GDash',
+        name: 'GDash Administrator',
       });
-      console.log(' Usuário ADMIN criado com sucesso!');
+      console.log(' ADMIN user created successfully!');
     }
   }
 
   // user create
   async create(createUserDto: CreateUserDto) {
-    // 1. Criptografa a senha antes de salvar
+    // 1. Encrypt the password before saving
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(createUserDto.password, salt);
 
-    // 2. Substitui a senha original pelo hash
+    // 2. Replace the original password with the hash
     const newUser = new this.userModel({
       ...createUserDto,
       password: hash,

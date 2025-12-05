@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  # 1. Banco de Dados
+  # 1. Database
   mongodb:
     image: mongo:6.0
     container_name: gdash-mongo
@@ -14,7 +14,7 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  # 2. Fila
+  # 2. Queue
   rabbitmq:
     image: rabbitmq:3-management
     container_name: gdash-rabbitmq
@@ -26,7 +26,7 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
-  # 3. API Backend (NestJS)
+  # 3. Backend API (NestJS)
   api:
     build: ./gdash-api
     container_name: gdash-api
@@ -34,7 +34,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Dentro do Docker, o host é 'mongodb', não localhost!
+      # Inside Docker, the host is 'mongodb', not localhost!
       MONGO_URI: mongodb://root:rootpassword@mongodb:27017/gdash-db?authSource=admin
     depends_on:
       - mongodb
@@ -45,14 +45,14 @@ services:
     container_name: gdash-worker
     restart: always
     environment:
-      # Conecta no serviço 'rabbitmq' e 'api' pelos nomes
+      # Connects to the 'rabbitmq' and 'api' services by their names
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
       API_URL: http://api:3000/api/weather/logs
     depends_on:
       - rabbitmq
       - api
 
-  # 5. Coletor (Python)
+  # 5. Collector (Python)
   collector:
     build: ./weather-collector
     container_name: gdash-collector
@@ -68,7 +68,7 @@ services:
     container_name: gdash-front
     restart: always
     ports:
-      - "5173:80" # Expõe a porta 80 do Nginx na 5173 da sua máquina
+      - "5173:80" # Exposes port 80 of Nginx on port 5173 of your machine
     depends_on:
       - api
 

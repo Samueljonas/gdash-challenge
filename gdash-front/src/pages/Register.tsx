@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Link para voltar pro login
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,7 @@ export default function Register() {
     setError("");
 
     try {
-      // 1. Chama a nova rota pública do backend
+      // 1. Calls the new public route of the backend
       const response = await fetch("http://localhost:3000/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,16 +34,16 @@ export default function Register() {
       });
 
       if (!response.ok) {
-        // Tenta ler o erro que veio da API (ex: Email já existe)
+        // Tries to read the error that came from the API (e.g., Email already exists)
         const errData = await response.json();
-        throw new Error(errData.message || "Erro ao criar conta.");
+        throw new Error(errData.message || "Error creating account.");
       }
 
-      // 2. Sucesso! Manda pro Login
-      alert("Conta criada com sucesso! Faça login.");
+      // 2. Success! Sends to Login
+      alert("Account created successfully! Please log in.");
       navigate("/");
     } catch (err: any) {
-      setError(err.message || "Erro ao conectar com o servidor.");
+      setError(err.message || "Error connecting to the server.");
     } finally {
       setLoading(false);
     }
@@ -53,39 +53,39 @@ export default function Register() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Card className="w-[350px] shadow-lg">
         <CardHeader>
-          <CardTitle>Crie sua conta</CardTitle>
-          <CardDescription>Comece a usar o GDash hoje</CardDescription>
+          <CardTitle>Create your account</CardTitle>
+          <CardDescription>Start using GDash today</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
-            {/* Campo Nome */}
+            {/* Name Field */}
             <div className="space-y-2">
-              <Label htmlFor="name">Nome Completo</Label>
+              <Label htmlFor="name">Full Name</Label>
               <Input
                 id="name"
-                placeholder="Seu Nome"
+                placeholder="Your Name"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
 
-            {/* Campo Email */}
+            {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="voce@exemplo.com"
+                placeholder="you@example.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
-            {/* Campo Senha */}
+            {/* Password Field */}
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -102,15 +102,15 @@ export default function Register() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Cadastrando..." : "Criar Conta"}
+              {loading ? "Registering..." : "Create Account"}
             </Button>
           </form>
 
-          {/* Link para voltar ao Login */}
+          {/* Link to go back to Login */}
           <div className="mt-4 text-center text-sm">
-            Já tem uma conta?{" "}
+            Already have an account?{" "}
             <Link to="/" className="text-blue-600 hover:underline">
-              Entrar
+              Login
             </Link>
           </div>
         </CardContent>

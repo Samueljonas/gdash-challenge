@@ -1,18 +1,18 @@
-# Etapa 1: Build do React
+# Step 1: Build React
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-# Instala dependências (incluindo as de dev para o build)
+# Install dependencies (including dev dependencies for the build)
 RUN npm install
 COPY . .
-# Gera a pasta 'dist'
+# Generate the 'dist' folder
 RUN npm run build
 
-# Etapa 2: Servidor Nginx
+# Step 2: Nginx Server
 FROM nginx:alpine
-# Copia o build do React para a pasta do Nginx
+# Copy the React build to the Nginx folder
 COPY --from=builder /app/dist /usr/share/nginx/html
-# Copia configuração customizada (criaremos abaixo)
+# Copy custom configuration (we will create it below)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

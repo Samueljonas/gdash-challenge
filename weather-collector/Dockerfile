@@ -1,16 +1,16 @@
-# Imagem base leve do Python
+# Lightweight Python base image
 FROM python:3.10-slim
 
-# Cria pasta de trabalho
+# Create working directory
 WORKDIR /app
 
-# Instala dependências
-# (Dica: Criar requirements.txt se não tiver: pip freeze > requirements.txt)
-# Para facilitar, vou instalar direto aqui no comando para garantir:
+# Install dependencies
+# (Tip: Create requirements.txt if you don't have one: pip freeze > requirements.txt)
+# To make it easier, I'll install it directly here in the command to ensure:
 RUN pip install requests pika schedule
 
-# Copia o código
+# Copy the code
 COPY . .
 
-# Comando para rodar
+# Command to run
 CMD ["python", "main.py"]

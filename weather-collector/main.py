@@ -42,8 +42,8 @@ def fetch_weather():
 
     except Exception as e:
         print(f"Error fetching weather data: {e}")
-# use pika to publish messages to RabbitMQ by AMQP protocol, throws every hour information about weather, creating a queue to go manage.
 def publish_to_queue(payload):
+    # use pika to publish messages to RabbitMQ by AMQP protocol, throws every hour information about weather, creating a queue to go manage.
     conection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
     channel = conection.channel()
 
