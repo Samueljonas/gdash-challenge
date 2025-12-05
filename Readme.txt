@@ -1,14 +1,6 @@
 `# 🌤️ GDash Weather Monitor
 
-> Uma solução Full-Stack distribuída para monitoramento climático em tempo real, utilizando arquitetura de microsserviços, dockerização completa e análise de dados inteligente.
-
-![Project Status](https://img.shields.io/badge/status-complete-green)
-![Docker](https://img.shields.io/badge/docker-compose-blue)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
-
-[![Assista ao Vídeo](https://img.shields.io/badge/▶-Ver_Demo_no_YouTube-red?style=for-the-badge)]
-
-![Dashboard Preview](./.github/assets/print_homepage.png)
+> Uma solução Full-Stack distribuída para monitoramento climático em tempo real, utilizando arquitetura de microsserviços, dockerização completa e análise de dados inteligente
 
 ## 📖 Sobre o Projeto
 
@@ -19,15 +11,6 @@ O diferencial deste projeto é a **arquitetura desacoplada**: a coleta de dados 
 ### 🏗️ Arquitetura da Solução
 
 O fluxo de dados segue o padrão *Producer-Consumer*:
-
-```mermaid
-graph LR
-    A[Python Collector] -->|JSON| B(RabbitMQ Queue)
-    B -->|Consome| C[Go Worker]
-    C -->|POST HTTP| D[NestJS API]
-    D <-->|Leitura/Escrita| E[(MongoDB)]
-    F[React Frontend] <-->|Rest API + JWT| D
-    D -.->|Insights IA| F`
 
 1. **Collector (Python 3.10):** Agente que consome a API Open-Meteo e publica na fila.
 2. **Queue (RabbitMQ):** Buffer que garante a persistência dos dados.
@@ -59,8 +42,7 @@ A aplicação é totalmente "Dockerizada".
 
 Bash
 
-`git clone https://github.com/SEU-USUARIO/gdash-challenge.git
-cd gdash-challenge`
+`git clone https://github.com/Samueljonas/gdash-challenge`
 
 ### 2. Suba o ambiente
 
@@ -78,9 +60,9 @@ DOCKER_BUILDKIT=0 docker-compose up --build -d`
 
 Após os containers subirem (confira com `docker compose ps`), acesse:
 
-- **Frontend:** [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
-- **API Docs:** [http://localhost:3000/api/weather/logs](https://www.google.com/search?q=http://localhost:3000/api/weather/logs)
-- **RabbitMQ:** [http://localhost:15672](https://www.google.com/search?q=http://localhost:15672) (User: `guest` / Pass: `guest`)
+- **Frontend:** [http://localhost:5173]
+- **API Docs:** [http://localhost:3000/api/weather/logs](
+- **RabbitMQ:** [http://localhost:15672] (User: `guest` / Pass: `guest`)
 
 ---
 
