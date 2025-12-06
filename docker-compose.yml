@@ -57,8 +57,10 @@ services:
     build: ./weather-collector
     container_name: gdash-collector
     restart: always
+    network_mode: "host"
+
     environment:
-      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_HOST: localhost
     depends_on:
       - rabbitmq
 

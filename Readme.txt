@@ -80,7 +80,7 @@ O sistema possui um "Seed" que cria um usuário administrador automaticamente.
 | Broker | RabbitMQ | Buffer e desacoplamento |
 | Worker | Go (Golang), AMQP | Processamento de alto throughput |
 | API| NestJS, Mongoose, JWT | Regra de negócio e Segurança |
-| Banco| MongoDB | Armazenamento NoSQL |
+| Banco | MongoDB | Armazenamento NoSQL |
 | Front | React, Tailwind v3, shadcn/ui | Visualização e Interação |
 | Infra | Docker, Nginx | Orquestração |
 
