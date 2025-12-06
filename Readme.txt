@@ -2,6 +2,8 @@
 
 Uma solução Full-Stack distribuída para monitoramento climático em tempo real, utilizando arquitetura de microsserviços, dockerização completa e análise de dados inteligente
 
+Link de apresentação: https://www.youtube.com/watch?v=vkQyskNBGRw
+
 📖 Sobre o Projeto
 
 O GDash é um sistema projetado para simular o monitoramento de usinas fotovoltaicas ou ambientes sensíveis. Ele coleta dados meteorológicos externos, processa-os em alta performance e exibe insights em um dashboard seguro e interativo.
