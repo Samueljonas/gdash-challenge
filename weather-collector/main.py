@@ -10,7 +10,7 @@ import os
 
 
 
-RABBITMQ_HOST = 'os.getenv("RABBITMQ_HOST", "localhost")'
+RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 QUEUE_NAME = 'weather_data'
 CITY_LAT = '-9.4072'
 CITY_LON = '-36.6275'
