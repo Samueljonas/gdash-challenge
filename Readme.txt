@@ -2,7 +2,7 @@
 
 Uma solução Full-Stack distribuída para monitoramento climático em tempo real, utilizando arquitetura de microsserviços, dockerização completa e análise de dados inteligente
 
-Link de apresentação: https://www.youtube.com/watch?v=vkQyskNBGRw
+Link de apresentação https://www.youtube.com/watch?v=QygP6kjnCjs
 
 📖 Sobre o Projeto
 
