@@ -1,0 +1,22 @@
+```text
+# Dependências
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Builds
+dist/
+build/
+bin/
+worker
+main
+
+# Logs e Dados
+*.log
+.DS_Store
+mongo_data/
+
+# Ambiente
+.env
