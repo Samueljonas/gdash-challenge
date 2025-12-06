@@ -177,7 +177,6 @@ export default function Dashboard() {
 
         {/* BOTÕES DE AÇÃO */}
         <div className="flex gap-2">
-          {/* NOVO: Botão Gestão de Usuários */}
           <Button
             variant="secondary"
             size="sm"
