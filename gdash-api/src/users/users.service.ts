@@ -9,23 +9,28 @@ import { User } from './schemas/user.schema';
 export class UsersService implements OnModuleInit {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  // --- SEED: CREATE DEFAULT USER ON STARTUP ---
   async onModuleInit() {
     const adminEmail = 'admin@gdash.com';
-    const exists = await this.userModel.findOne({ email: adminEmail });
+    const existingAdmin = await this.userModel.findOne({ email: adminEmail });
 
-    if (!exists) {
-      console.log('⚡ Creating default ADMIN user...');
-      // Default password: "123456"
-      // The "10" is the processing cost (Salt rounds)
+    if (!existingAdmin) {
+      // Cria do zero se não existir
+      console.log('⚡ Criando usuário ADMIN padrão...');
       const passwordHash = await bcrypt.hash('123456', 10);
-
       await this.userModel.create({
         email: adminEmail,
         password: passwordHash,
-        name: 'GDash Administrator',
+        name: 'Administrador GDash',
+        role: 'admin', // <--- Define como ADMIN
       });
-      console.log(' ADMIN user created successfully!');
+    } else {
+      // (Opcional) Se já existe, garante que ele vire admin
+      // Isso corrige seu banco atual sem precisar deletar tudo
+      if (existingAdmin.role !== 'admin') {
+        existingAdmin.role = 'admin';
+        await existingAdmin.save();
+        console.log('⚡ Usuário Admin atualizado com permissão de chefe.');
+      }
     }
   }
 

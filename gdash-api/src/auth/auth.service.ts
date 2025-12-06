@@ -23,9 +23,7 @@ export class AuthService {
 
     // 2. If the user doesn't exist, reject immediately
     if (!user) {
-      throw new UnauthorizedException(
-        'Invalid credentials (Email not found)',
-      );
+      throw new UnauthorizedException('Invalid credentials (Email not found)');
     }
 
     // 3. Password Comparison (The Moment of Truth)
@@ -44,7 +42,12 @@ export class AuthService {
 
     // 4. If it passed, let's generate the "Wristband" (Token)
     // The 'payload' is the content that will be written inside the encrypted token.
-    const payload = { sub: user._id, email: user.email, name: user.name };
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload), // Digitally signs the token

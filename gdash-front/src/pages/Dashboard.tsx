@@ -16,7 +16,7 @@ import {
   LogOut,
   Download,
   Bot,
-  Users as UsersIcon, // Alias para não confundir com o nome da página
+  Users as UsersIcon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// --- INTERFACES (Contratos de Dados) ---
+// --- INTERFACES ---
 
 interface WeatherLog {
   _id: string;
@@ -55,16 +55,20 @@ export default function Dashboard() {
     alerts: [],
   });
 
+  // --- LÓGICA DE PERMISSÃO (ADMIN) ---
+  // Lê o usuário salvo no login para saber se é chefe
+  const userStored = localStorage.getItem("gdash_user");
+  const user = userStored ? JSON.parse(userStored) : null;
+  const isAdmin = user?.role === "admin";
+
   // --- FUNÇÕES DE SEGURANÇA E AUXILIARES ---
 
-  // 1. Função de Logout
   const handleLogout = () => {
     localStorage.removeItem("gdash_token");
     localStorage.removeItem("gdash_user");
     navigate("/");
   };
 
-  // 2. Fetch Seguro (Busca dados JSON com Token)
   const fetchProtectedData = async (url: string) => {
     const token = localStorage.getItem("gdash_token");
 
@@ -92,7 +96,6 @@ export default function Dashboard() {
     }
   };
 
-  // 3. Exportação de CSV
   const handleExportCsv = async () => {
     const token = localStorage.getItem("gdash_token");
     if (!token) return;
@@ -132,14 +135,12 @@ export default function Dashboard() {
   // --- CICLO DE VIDA ---
 
   useEffect(() => {
-    // Busca Logs
     fetchProtectedData("http://localhost:3000/api/weather/logs").then(
       (data) => {
         if (data) setLogs(data);
       }
     );
 
-    // Busca Insights
     fetchProtectedData("http://localhost:3000/api/weather/insights").then(
       (data) => {
         if (data) setInsights(data);
@@ -175,15 +176,17 @@ export default function Dashboard() {
           <p className="text-slate-500">Monitoramento seguro em tempo real.</p>
         </div>
 
-        {/* BOTÕES DE AÇÃO */}
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate("/users")}
-          >
-            <UsersIcon className="mr-2 h-4 w-4" /> Usuários
-          </Button>
+          {/* LÓGICA DE EXIBIÇÃO: Só mostra se for Admin */}
+          {isAdmin && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate("/users")}
+            >
+              <UsersIcon className="mr-2 h-4 w-4" /> Usuários
+            </Button>
+          )}
 
           <Button variant="outline" size="sm" onClick={handleExportCsv}>
             <Download className="mr-2 h-4 w-4" /> Exportar CSV
